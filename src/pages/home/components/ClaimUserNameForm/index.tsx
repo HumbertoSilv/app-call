@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button, Text, TextInput } from "@ignite-ui/react"
+import { useRouter } from "next/router"
 import { ArrowRight } from "phosphor-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -16,20 +17,21 @@ const claimUsernameFormSchema = z.object({
 type ClaimUsernameFormData = z.infer<typeof claimUsernameFormSchema>
 
 const ClaimUserNameForm = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<ClaimUsernameFormData>({
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ClaimUsernameFormData>({
     resolver: zodResolver(claimUsernameFormSchema)
   })
 
-  const claimUsernameForm = (data: ClaimUsernameFormData) => {
-    console.log(data);
+  const router = useRouter()
 
+  const claimUsernameForm = async (data: ClaimUsernameFormData) => {
+    await router.push({ pathname: '/register', query: data })
   }
 
   return (
     <>
       <Form as="form" onSubmit={handleSubmit(claimUsernameForm)}>
-        <TextInput size="sm" prefix="app.call/" placeholder="your-user" crossOrigin={undefined} {...register('username')} />
-        <Button size="sm" type="submit">
+        <TextInput size="sm" prefix="app.call/" placeholder="your-username" crossOrigin={undefined} {...register('username')} />
+        <Button size="sm" type="submit" disabled={isSubmitting}>
           Reserve
           <ArrowRight />
         </Button>
