@@ -31,7 +31,7 @@ const Register = () => {
     try {
       await api.post('/users', data)
 
-      router.push('/register/connect-calendar')
+      await router.push('/register/connect-calendar')
     } catch (error) {
       if (error instanceof AxiosError && error.response?.data.message) {
         return alert(error.response.data.message)
