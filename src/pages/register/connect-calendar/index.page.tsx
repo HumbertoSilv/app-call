@@ -1,11 +1,11 @@
 import { Button, Heading, MultiStep, Text } from '@ignite-ui/react'
 import { signIn, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import { ArrowRight, Check } from 'phosphor-react'
 import { Container, Header } from '../styles'
 import { AuthError, ConnectBox, ConnectItem } from './styles'
-import { useRouter } from 'next/router'
 
-const Register = () => {
+const ConnectCalendar = () => {
   const router = useRouter()
   const session = useSession()
 
@@ -39,7 +39,7 @@ const Register = () => {
             </Button>
           ) : (
             <Button
-            variant="secondary"
+              variant="secondary"
               size="sm"
               onClick={handleConnectCalendar}
             >
@@ -65,4 +65,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default ConnectCalendar
