@@ -1,11 +1,26 @@
-import { Button, Checkbox, Heading, MultiStep, Text, TextInput } from '@ignite-ui/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Button,
+  Checkbox,
+  Heading,
+  MultiStep,
+  Text,
+  TextInput,
+} from '@ignite-ui/react'
 import { ArrowRight } from 'phosphor-react'
-import { Container, Header } from '../styles'
-import { FormError, IntervalBox, IntervalContainer, IntervalDay, IntervalInputs, IntervalItem } from './styles'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { convertTimeStringToMinutes } from '../../../utils/convert-time-string-to-minutes'
 import { getWeekDays } from '../../../utils/get-week-days'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { Container, Header } from '../styles'
+import {
+  FormError,
+  IntervalBox,
+  IntervalContainer,
+  IntervalDay,
+  IntervalInputs,
+  IntervalItem,
+} from './styles'
 
 const timeIntervalsFormSchema = z.object({
   intervals: z
@@ -15,43 +30,70 @@ const timeIntervalsFormSchema = z.object({
         enabled: z.boolean(),
         startTime: z.string(),
         endTime: z.string(),
-      })
+      }),
     )
     .length(7)
     .transform((intervals) => intervals.filter((interval) => interval.enabled))
     .refine((intervals) => intervals.length > 0, {
-      message: 'You need to select at least one day of the week.'
+      message: 'You need to select at least one day of the week.',
     })
+    .transform((intervals) => {
+      return intervals.map((interval) => {
+        return {
+          weekDay: interval.weekDay,
+          startTimeInMinutes: convertTimeStringToMinutes(interval.startTime),
+          endTimeInMinutes: convertTimeStringToMinutes(interval.endTime),
+        }
+      })
+    })
+    .refine(
+      (intervals) => {
+        return intervals.every(
+          (interval) =>
+            interval.endTimeInMinutes - 60 >= interval.startTimeInMinutes,
+        )
+      },
+      {
+        message: 'The end time must be at least 1 hour away from the start.',
+      },
+    ),
 })
 
-type TimeIntervalFormData = z.infer<typeof timeIntervalsFormSchema>
+type TimeIntervalFormInput = z.input<typeof timeIntervalsFormSchema>
+type TimeIntervalFormOutPut = z.output<typeof timeIntervalsFormSchema>
 
 const TimeInterval = () => {
-  const { register, handleSubmit, control, watch, formState: { errors, isSubmitting } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<TimeIntervalFormInput, any, TimeIntervalFormOutPut>({
     resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
-        { weekDay: 0, enabled: false, startTime: '08:00', endTime: '18:00', },
-        { weekDay: 1, enabled: true, startTime: '08:00', endTime: '18:00', },
-        { weekDay: 2, enabled: true, startTime: '08:00', endTime: '18:00', },
-        { weekDay: 3, enabled: true, startTime: '08:00', endTime: '18:00', },
-        { weekDay: 4, enabled: true, startTime: '08:00', endTime: '18:00', },
-        { weekDay: 5, enabled: true, startTime: '08:00', endTime: '18:00', },
-        { weekDay: 6, enabled: false, startTime: '08:00', endTime: '18:00', }
-      ]
-    }
+        { weekDay: 0, enabled: false, startTime: '08:00', endTime: '18:00' },
+        { weekDay: 1, enabled: true, startTime: '08:00', endTime: '18:00' },
+        { weekDay: 2, enabled: true, startTime: '08:00', endTime: '18:00' },
+        { weekDay: 3, enabled: true, startTime: '08:00', endTime: '18:00' },
+        { weekDay: 4, enabled: true, startTime: '08:00', endTime: '18:00' },
+        { weekDay: 5, enabled: true, startTime: '08:00', endTime: '18:00' },
+        { weekDay: 6, enabled: false, startTime: '08:00', endTime: '18:00' },
+      ],
+    },
   })
 
   const { fields } = useFieldArray({
     control,
-    name: "intervals"
+    name: 'intervals',
   })
 
   const weekDays = getWeekDays()
   const intervals = watch('intervals')
 
-  const handleSetTimeIntervals = (data: TimeIntervalFormData) => {
-    console.log(data);
+  const handleSetTimeIntervals = (data: TimeIntervalFormOutPut) => {
+    console.log(data)
   }
 
   return (
@@ -64,7 +106,7 @@ const TimeInterval = () => {
         <MultiStep size={4} currentStep={3} />
       </Header>
 
-      <IntervalBox as='form' onSubmit={handleSubmit(handleSetTimeIntervals)}>
+      <IntervalBox as="form" onSubmit={handleSubmit(handleSetTimeIntervals)}>
         <IntervalContainer>
           {fields.map((field, index) => {
             return (
@@ -77,7 +119,7 @@ const TimeInterval = () => {
                       return (
                         <Checkbox
                           onCheckedChange={(checked) => {
-                            field.onChange(checked === true);
+                            field.onChange(checked === true)
                           }}
                           checked={field.value}
                         />
@@ -88,16 +130,16 @@ const TimeInterval = () => {
                 </IntervalDay>
                 <IntervalInputs>
                   <TextInput
-                    size='sm'
-                    type='time'
+                    size="sm"
+                    type="time"
                     step={60}
                     crossOrigin={undefined}
                     disabled={!intervals[index].enabled}
                     {...register(`intervals.${field.weekDay}.startTime`)}
                   />
                   <TextInput
-                    size='sm'
-                    type='time'
+                    size="sm"
+                    type="time"
                     step={60}
                     crossOrigin={undefined}
                     disabled={!intervals[index].enabled}

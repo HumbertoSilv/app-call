@@ -51,8 +51,8 @@ const ConnectCalendar = () => {
 
         {hasAuthError && (
           <AuthError size="sm">
-            Failed to connect to Google, make sure you have enabled the
-            Google Calendar access permissions.
+            Failed to connect to Google, make sure you have enabled the Google
+            Calendar access permissions.
           </AuthError>
         )}
 
