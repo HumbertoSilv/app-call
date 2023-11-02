@@ -3,7 +3,10 @@ import NextAuth, { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '../../../lib/auth/prisma-adapter'
 
-export const authOptions = (req: NextApiRequest, res: NextApiResponse): NextAuthOptions => {
+export const buildNextAuthOptions = (
+  req: NextApiRequest,
+  res: NextApiResponse,
+): NextAuthOptions => {
   return {
     adapter: PrismaAdapter(req, res),
     providers: [
@@ -42,14 +45,13 @@ export const authOptions = (req: NextApiRequest, res: NextApiResponse): NextAuth
       async session({ session, user }) {
         return {
           ...session,
-          user
+          user,
         }
       },
     },
   }
 }
 
-
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
-  return NextAuth(req, res, authOptions(req, res))
+  return NextAuth(req, res, buildNextAuthOptions(req, res))
 }
