@@ -1,28 +1,33 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Heading, MultiStep, Text, TextInput } from "@ignite-ui/react"
-import { AxiosError } from "axios"
-import { useRouter } from "next/router"
-import { ArrowRight } from "phosphor-react"
-import { useEffect } from "react"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { api } from "../../lib/axios"
-import { Container, Form, FormError, Header } from "./styles"
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button, Heading, MultiStep, Text, TextInput } from '@ignite-ui/react'
+import { AxiosError } from 'axios'
+import { useRouter } from 'next/router'
+import { ArrowRight } from 'phosphor-react'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { api } from '../../lib/axios'
+import { Container, Form, FormError, Header } from './styles'
 
 const registerFormSchema = z.object({
   username: z
     .string()
-    .min(3, { message: "Min. 3 characters." })
-    .regex(/^([a-z\\-]+)$/i, { message: "Just letters and hyphen." })
+    .min(3, { message: 'Min. 3 characters.' })
+    .regex(/^([a-z\\-]+)$/i, { message: 'Just letters and hyphen.' })
     .transform((username) => username.toLowerCase()),
-  name: z.string().min(3, { message: "Min. 3 characters." })
+  name: z.string().min(3, { message: 'Min. 3 characters.' }),
 })
 
 type RegisterFormData = z.infer<typeof registerFormSchema>
 
 const Register = () => {
-  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerFormSchema)
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerFormSchema),
   })
 
   const router = useRouter()
@@ -36,7 +41,7 @@ const Register = () => {
       if (error instanceof AxiosError && error.response?.data.message) {
         return alert(error.response.data.message)
       }
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -51,7 +56,8 @@ const Register = () => {
       <Header>
         <Heading as="strong">Welcome to App Call!</Heading>
         <Text>
-          We need some information to create your profile! Ah, you can edit this information later.
+          We need some information to create your profile! Ah, you can edit this
+          information later.
         </Text>
 
         <MultiStep size={4} currentStep={1} />
@@ -67,7 +73,9 @@ const Register = () => {
             {...register('username')}
           />
 
-          {errors.username && (<FormError size='sm'>{errors.username.message}</FormError>)}
+          {errors.username && (
+            <FormError size="sm">{errors.username.message}</FormError>
+          )}
         </label>
 
         <label>
@@ -78,7 +86,9 @@ const Register = () => {
             {...register('name')}
           />
 
-          {errors.name && (<FormError size='sm'>{errors.name.message}</FormError>)}
+          {errors.name && (
+            <FormError size="sm">{errors.name.message}</FormError>
+          )}
         </label>
 
         <Button disabled={isSubmitting} type="submit">

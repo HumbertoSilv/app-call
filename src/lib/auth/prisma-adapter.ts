@@ -1,9 +1,12 @@
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest, NextApiResponse, NextPageContext } from 'next'
 import type { Adapter } from 'next-auth/adapters'
 import { destroyCookie, parseCookies } from 'nookies'
 import { prisma } from '../prisma'
 
-export function PrismaAdapter(req: NextApiRequest, res: NextApiResponse): Adapter {
+export function PrismaAdapter(
+  req: NextApiRequest | NextPageContext['req'],
+  res: NextApiResponse | NextPageContext['res'],
+): Adapter {
   return {
     async createUser(user) {
       const { '@appCall:userId': userIdOnCookies } = parseCookies({ req })
@@ -12,13 +15,13 @@ export function PrismaAdapter(req: NextApiRequest, res: NextApiResponse): Adapte
 
       const prismaUser = await prisma.user.update({
         where: {
-          id: userIdOnCookies
+          id: userIdOnCookies,
         },
         data: {
           name: user.name,
           email: user.email,
-          avatar_url: user.avatar_url
-        }
+          avatar_url: user.avatar_url,
+        },
       })
 
       destroyCookie({ res }, '@appCall:userId', { path: '/' })
@@ -36,8 +39,8 @@ export function PrismaAdapter(req: NextApiRequest, res: NextApiResponse): Adapte
     async getUser(id) {
       const user = await prisma.user.findUnique({
         where: {
-          id
-        }
+          id,
+        },
       })
 
       if (!user) {
@@ -50,15 +53,15 @@ export function PrismaAdapter(req: NextApiRequest, res: NextApiResponse): Adapte
         username: user.username,
         email: user.email!,
         emailVerified: null,
-        avatar_url: user.avatar_url
+        avatar_url: user.avatar_url,
       }
     },
 
     async getUserByEmail(email) {
       const user = await prisma.user.findUnique({
         where: {
-          email
-        }
+          email,
+        },
       })
 
       if (!user) {
@@ -71,7 +74,7 @@ export function PrismaAdapter(req: NextApiRequest, res: NextApiResponse): Adapte
         username: user.username,
         email: user.email!,
         emailVerified: null,
-        avatar_url: user.avatar_url
+        avatar_url: user.avatar_url,
       }
     },
 
@@ -80,12 +83,12 @@ export function PrismaAdapter(req: NextApiRequest, res: NextApiResponse): Adapte
         where: {
           provider_provider_account_id: {
             provider,
-            provider_account_id: providerAccountId
+            provider_account_id: providerAccountId,
           },
         },
         include: {
-          user: true
-        }
+          user: true,
+        },
       })
 
       if (!account) {
@@ -107,22 +110,22 @@ export function PrismaAdapter(req: NextApiRequest, res: NextApiResponse): Adapte
     async updateUser(user) {
       const prismaUser = await prisma.user.update({
         where: {
-          id: user.id!
+          id: user.id as string,
         },
         data: {
           name: user.name,
           email: user.email,
-          avatar_url: user.avatar_url
-        }
+          avatar_url: user.avatar_url,
+        },
       })
 
       return {
         id: prismaUser.id,
         name: prismaUser.name,
         username: prismaUser.username,
-        email: prismaUser.email!,
+        email: prismaUser.email as string,
         emailVerified: null,
-        avatar_url: prismaUser.avatar_url!,
+        avatar_url: prismaUser.avatar_url as string,
       }
     },
 
@@ -140,7 +143,7 @@ export function PrismaAdapter(req: NextApiRequest, res: NextApiResponse): Adapte
           scope: account.scope,
           id_token: account.id_token,
           session_state: account.session_state,
-        }
+        },
       })
     },
 
@@ -149,25 +152,25 @@ export function PrismaAdapter(req: NextApiRequest, res: NextApiResponse): Adapte
         data: {
           user_id: userId,
           expires,
-          session_token: sessionToken
-        }
+          session_token: sessionToken,
+        },
       })
 
       return {
         userId,
         sessionToken,
-        expires
+        expires,
       }
     },
 
     async getSessionAndUser(sessionToken) {
       const prismaSession = await prisma.session.findUnique({
         where: {
-          session_token: sessionToken
+          session_token: sessionToken,
         },
         include: {
-          user: true
-        }
+          user: true,
+        },
       })
 
       if (!prismaSession) {
@@ -196,12 +199,12 @@ export function PrismaAdapter(req: NextApiRequest, res: NextApiResponse): Adapte
     async updateSession({ sessionToken, userId, expires }) {
       const prismaSession = await prisma.session.update({
         where: {
-          session_token: sessionToken
+          session_token: sessionToken,
         },
         data: {
           expires,
-          user_id: userId
-        }
+          user_id: userId,
+        },
       })
 
       return {
@@ -214,8 +217,8 @@ export function PrismaAdapter(req: NextApiRequest, res: NextApiResponse): Adapte
     async deleteSession(sessionToken) {
       await prisma.session.delete({
         where: {
-          session_token: sessionToken
-        }
+          session_token: sessionToken,
+        },
       })
     },
   }
