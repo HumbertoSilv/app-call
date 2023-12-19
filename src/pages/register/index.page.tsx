@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Heading, MultiStep, Text, TextInput } from '@ignite-ui/react'
 import { AxiosError } from 'axios'
+import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ArrowRight } from 'phosphor-react'
 import { useEffect } from 'react'
@@ -12,10 +13,10 @@ import { Container, Form, FormError, Header } from './styles'
 const registerFormSchema = z.object({
   username: z
     .string()
-    .min(3, { message: 'Min. 3 characters.' })
-    .regex(/^([a-z\\-]+)$/i, { message: 'Just letters and hyphen.' })
+    .min(3, { message: 'Min. 3 caracteres.' })
+    .regex(/^([a-z\\-]+)$/i, { message: 'Apenas letras e hífen.' })
     .transform((username) => username.toLowerCase()),
-  name: z.string().min(3, { message: 'Min. 3 characters.' }),
+  name: z.string().min(3, { message: 'Min. 3 caracteres.' }),
 })
 
 type RegisterFormData = z.infer<typeof registerFormSchema>
@@ -52,51 +53,54 @@ const Register = () => {
   }, [router.query?.username, setValue])
 
   return (
-    <Container>
-      <Header>
-        <Heading as="strong">Welcome to App Call!</Heading>
-        <Text>
-          We need some information to create your profile! Ah, you can edit this
-          information later.
-        </Text>
+    <>
+      <NextSeo title="Crie uma conta | App Call" />
+      <Container>
+        <Header>
+          <Heading as="strong">Bem vindo ao App Call!</Heading>
+          <Text>
+            Precisamos de algumas informações para criar seu perfil! Ah, você pode editar
+            estas informações mais tarde.
+          </Text>
 
-        <MultiStep size={4} currentStep={1} />
-      </Header>
+          <MultiStep size={4} currentStep={1} />
+        </Header>
 
-      <Form as="form" onSubmit={handleSubmit(handleRegister)}>
-        <label>
-          <Text size="sm">Username</Text>
-          <TextInput
-            prefix="app.call/"
-            placeholder="your-username"
-            crossOrigin={undefined}
-            {...register('username')}
-          />
+        <Form as="form" onSubmit={handleSubmit(handleRegister)}>
+          <label>
+            <Text size="sm">Nome de usuário</Text>
+            <TextInput
+              prefix="app.call/"
+              placeholder="seu-usuário"
+              crossOrigin={undefined}
+              {...register('username')}
+            />
 
-          {errors.username && (
-            <FormError size="sm">{errors.username.message}</FormError>
-          )}
-        </label>
+            {errors.username && (
+              <FormError size="sm">{errors.username.message}</FormError>
+            )}
+          </label>
 
-        <label>
-          <Text size="sm">Full name</Text>
-          <TextInput
-            placeholder="your name"
-            crossOrigin={undefined}
-            {...register('name')}
-          />
+          <label>
+            <Text size="sm">Nome completo</Text>
+            <TextInput
+              placeholder="seu nome"
+              crossOrigin={undefined}
+              {...register('name')}
+            />
 
-          {errors.name && (
-            <FormError size="sm">{errors.name.message}</FormError>
-          )}
-        </label>
+            {errors.name && (
+              <FormError size="sm">{errors.name.message}</FormError>
+            )}
+          </label>
 
-        <Button disabled={isSubmitting} type="submit">
-          Next step
-          <ArrowRight />
-        </Button>
-      </Form>
-    </Container>
+          <Button disabled={isSubmitting} type="submit">
+            Próximo passo
+            <ArrowRight />
+          </Button>
+        </Form>
+      </Container>
+    </>
   )
 }
 

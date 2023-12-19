@@ -10,6 +10,7 @@ import {
 import { GetServerSideProps } from 'next'
 import { getServerSession } from 'next-auth'
 import { useSession } from 'next-auth/react'
+import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ArrowRight } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
@@ -46,38 +47,40 @@ const UpdateProfile = () => {
   }
 
   return (
-    <Container>
-      <Header>
-        <Heading as="strong">Set your availability</Heading>
-        <Text>Lastly, a brief description and a profile photo.</Text>
+    <>
+      <NextSeo title="Atualize seu perfil | App Call" noindex />
+      <Container>
+        <Header>
+          <Heading as="strong">Defina sua disponibilidade</Heading>
+          <Text>Por último, uma breve descrição e uma foto de perfil.</Text>
 
-        <MultiStep size={4} currentStep={4} />
-      </Header>
+          <MultiStep size={4} currentStep={4} />
+        </Header>
 
-      <ProfileBox as="form" onSubmit={handleSubmit(handleUpdateProfile)}>
-        <label>
-          <Text>Profile picture</Text>
-          <Avatar
-            src={session.data?.user.avatar_url as string}
-            alt={session.data?.user.username}
-          />
-        </label>
+        <ProfileBox as="form" onSubmit={handleSubmit(handleUpdateProfile)}>
+          <label>
+            <Text>Foto de perfil</Text>
+            <Avatar
+              src={session.data?.user.avatar_url as string}
+              alt={session.data?.user.username}
+            />
+          </label>
 
-        <label>
-          <Text size="sm">About you</Text>
-          <TextArea {...register('bio')} />
-          <FormAnnotation size="sm">
-            Tell me a little about you. This will be displayed on your personal
-            page.
-          </FormAnnotation>
-        </label>
+          <label>
+            <Text size="sm">Sobre você</Text>
+            <TextArea {...register('bio')} />
+            <FormAnnotation size="sm">
+              Diga-me um pouco sobre você. Isso será exibido em sua página pessoal.
+            </FormAnnotation>
+          </label>
 
-        <Button disabled={isSubmitting} type="submit">
-          Finish
-          <ArrowRight />
-        </Button>
-      </ProfileBox>
-    </Container>
+          <Button disabled={isSubmitting} type="submit">
+            Concluir
+            <ArrowRight />
+          </Button>
+        </ProfileBox>
+      </Container>
+    </>
   )
 }
 
