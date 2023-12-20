@@ -9,8 +9,8 @@ import { Form, FormAnnotation } from "./styles"
 const claimUsernameFormSchema = z.object({
   username: z
     .string()
-    .min(3, { message: "Min. 3 characters." })
-    .regex(/^([a-z\\-]+)$/i, { message: "Just letters and hyphen." })
+    .min(3, { message: "Min. 3 caracteres." })
+    .regex(/^([a-z\\-]+)$/i, { message: "Apenas letras e hífen." })
     .transform((username) => username.toLowerCase()),
 })
 
@@ -30,7 +30,7 @@ const ClaimUserNameForm = () => {
   return (
     <>
       <Form as="form" onSubmit={handleSubmit(claimUsernameForm)}>
-        <TextInput size="sm" prefix="app.call/" placeholder="your-username" crossOrigin={undefined} {...register('username')} />
+        <TextInput size="sm" prefix="app.call/" placeholder="seu-usuário" crossOrigin={undefined} {...register('username')} />
         <Button size="sm" type="submit" disabled={isSubmitting}>
           Reserve
           <ArrowRight />
@@ -39,7 +39,7 @@ const ClaimUserNameForm = () => {
 
       <FormAnnotation>
         <Text size="sm">
-          {errors.username ? errors.username.message : "Enter the username..."}
+          {errors.username ? errors.username.message : "Digite um nome de usuário..."}
         </Text>
       </FormAnnotation>
     </>
